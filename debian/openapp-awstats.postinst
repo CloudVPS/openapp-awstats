@@ -19,24 +19,23 @@ set -e
 
 case "$1" in
     configure)
-            # Disable original awstats cronscript
-            CRON=/etc/cron.d/awstats
-            if [ -f ${CRON} -a -z $2 ]; then
-                OLDCONF=$(cat ${CRON})
-                OLDCONF=$(echo "#${OLDCONF}")
-                echo "${OLDCONF}" > ${CRON}
-                echo "" >> ${CRON}
-                echo "## Original configuration disabled by openapp-awstats. New configuration follows" >> ${CRON}
-                echo "*/15 * * * www-data [ -x /usr/lib/cgi-bin/awstats.pl -a -f /etc/openapp-awstats/.htpasswd ] && /usr/bin/openapp-awstats" >> ${CRON}
-                echo "## To enable Awstats, enter a password in the OpenApp webinterface"
-            fi
+        # Disable original awstats cronscript
+        CRON=/etc/cron.d/awstats
+        if [ -f ${CRON} -a -z $2 ]; then
+            OLDCONF=$(cat ${CRON})
+            OLDCONF=$(echo "#${OLDCONF}")
+            echo "${OLDCONF}" > ${CRON}
+            echo "" >> ${CRON}
+            echo "## Original configuration disabled by openapp-awstats. New configuration follows" >> ${CRON}
+            echo "*/15 * * * www-data [ -x /usr/lib/cgi-bin/awstats.pl -a -f /etc/openapp-awstats/.htpasswd ] && /usr/bin/openapp-awstats" >> ${CRON}
+            echo "## To enable Awstats, enter a password in the OpenApp webinterface"
+        fi
 
-            # Enable apache2.conf
-            ln -sf /etc/openapp-awstats/apache2.conf /etc/apache2/conf.d/openapp-awstats
+        # Enable apache2.conf
+        ln -sf /etc/openapp-awstats/apache2.conf /etc/apache2/conf.d/openapp-awstats
 
-            # Enable openapp-backup module
-            openapp-backup-enmod awstats
-		fi
+        # Enable openapp-backup module
+        openapp-backup-enmod awstats
 	;;
 	abort-upgrade|abort-remove|abort-deconfigure|triggered)
     ;;
