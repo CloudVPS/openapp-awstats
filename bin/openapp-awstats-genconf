@@ -13,8 +13,7 @@ for conffile in $(grep '<VirtualHost' ${A2CONFDIR}/* | cut -f1 -d:); do
     SERVERALIASES=$(grep -i ServerAlias ${conffile} | tr '\n' ' ' | sed -e 's/ \+/ /g' | sed -e 's/\( \+\)\?ServerAlias //gi' )
     ACCESSLOG=$(grep -i '\(custom\|access\)log' ${conffile} | sed -e 's/ \+/ /g' | sed -e 's/\( \+\)\?\(Custom\|Access\)Log \([^ ]\+\).*/\3/gi')
 
-    [ -z "${SERVERNAME}" ] && MAKEDEFAULT=yes
-    [ -z "${SERVERNAME}" ] && SERVERNAME=localhost
+    [ -z "${SERVERNAME}" ] && SERVERNAME=$(hostname -f)
     [ -z "${ACCESSLOG}" ] && ACCESSLOG=/var/log/apache2/access.log
 	 
 
@@ -25,8 +24,6 @@ for conffile in $(grep '<VirtualHost' ${A2CONFDIR}/* | cut -f1 -d:); do
 
     [ -f ${OPENAPPAWS}/awstats.${SERVERNAME}.conf ] && \
         echo 'Include "/etc/awstats/awstats.'${SERVERNAME}'.conf.local"' >> ${TMPDIR}/awstats.${SERVERNAME}.conf
-
-    [ "${MAKEDEFAULT}" = "yes" ] && mv ${TMPDIR}/awstats.${SERVERNAME}.conf ${TMPDIR}/awstats.conf
 
     mv ${TMPDIR}/* /etc/awstats/
 done

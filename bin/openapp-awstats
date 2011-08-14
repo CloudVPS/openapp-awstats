@@ -8,10 +8,6 @@ error() {
 echo "Creating config"
 /usr/bin/openapp-awstats-genconf
 
-echo "Running default configuration"
-/usr/lib/cgi-bin/awstats.pl -config=awstats -update \
-    || error "Could not process default configuration"
-
 for i in /etc/awstats/awstats.*.conf; do
     if [ "A$i" = 'A/etc/awstats/awstats.*.conf' ]; then 
         error "awstats is installed, but there are no suitable configfiles"
