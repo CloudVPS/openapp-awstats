@@ -1,0 +1,25 @@
+#!/bin/bash
+
+error() {
+    echo $1
+    exit 1
+}
+
+echo "Creating config"
+/usr/bin/openapp-awstats-genconf
+
+echo "Running default configuration"
+/usr/lib/cgi-bin/awstats.pl -config=awstats -update \
+    || error "Could not process default configuration"
+
+for i in /etc/awstats/awstats.*.conf; do
+    if [ "A$i" = 'A/etc/awstats/awstats.*.conf' ]; then 
+        error "awstats is installed, but there are no suitable configfiles"
+    fi
+    CONF=`echo $i | sed -e 's,^/etc/awstats/awstats.\(.*\).conf$,\1,'`
+    echo "Running awstats for $CONF"
+    /usr/lib/cgi-bin/awstats.pl -config=$CONF -update \
+        || error "Could not process $CONF"
+    echo "Done ($CONF)"
+    echo ""
+done

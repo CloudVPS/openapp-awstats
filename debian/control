@@ -1,0 +1,13 @@
+Source: openapp-awstats
+Section: database
+Priority: extra
+Maintainer: Mark Schouten <mark@tuxis.nl>
+Build-Depends: debhelper
+Standards-Version: 3.9.1
+Homepage: http://www.openpanel.com/openapp/
+
+Package: openapp-awstats
+Architecture: any
+Pre-Depends: openapp-backup, awstats
+Depends: libgeo-ip-perl, bash, apache2, apache2-utils
+Description: This will install Awstats statistics for your OpenApp Appliance!

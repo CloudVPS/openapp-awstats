@@ -1,0 +1,15 @@
+#!/bin/bash
+
+CONFDIR=/etc/openapp-awstats
+
+fatal() {
+    echo "ERROR: $1"
+    exit 1
+}
+
+[ -z $1 ] && PASSWORD=`pwgen -s 10`
+[ "$1" = "stdin" ] && read -p "Please enter your password: " PASSWORD
+
+htpasswd -bc /etc/openapp-awstats/.htpasswd admin ${PASSWORD} > /dev/null
+
+echo "${PASSWORD} is your new password"

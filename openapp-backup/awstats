@@ -1,0 +1,28 @@
+#!/bin/bash
+# Prio: 100
+
+. /usr/lib/openapp-backup/includes/index
+
+###
+# This script will backup and restore /var/lib/awstats
+
+BACKUPDIR=$1
+ACTION=$2
+
+run_backup() {
+    rsync -a /var/lib/awstats ${BACKUPDIR} || fatal "Could not rsync /var/lib/awstats to ${BACKUPDIR}"
+    rsync -a /etc/openapp-awstats ${BACKUPDIR} || fatal "Could not rsync /etc/openapp-awstats to ${BACKUPDIR}"
+}
+
+run_restore() {
+    rsync -a ${BACKUPDIR}/ /
+}
+
+case ${ACTION} in
+    backup)
+        run_backup
+    ;;
+    restore)
+        run_restore
+    ;;
+esac

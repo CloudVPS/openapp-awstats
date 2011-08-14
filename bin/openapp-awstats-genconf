@@ -1,0 +1,33 @@
+#!/bin/bash
+
+##
+# Please note, only one virtualhost per configfile is supported
+A2CONFDIR=/etc/apache2/sites-enabled
+OPENAPPAWS=/etc/openapp-awstats
+
+TMPDIR=$(mktemp -d)
+
+for conffile in $(grep '<VirtualHost' ${A2CONFDIR}/* | cut -f1 -d:); do
+    MAKEDEFAULT=no
+    SERVERNAME=$(grep -i ServerName ${conffile} | sed -e 's/\(\t\| \)\+/ /g' | sed -e 's/\( \+\)\?ServerName //gi' )
+    SERVERALIASES=$(grep -i ServerAlias ${conffile} | tr '\n' ' ' | sed -e 's/ \+/ /g' | sed -e 's/\( \+\)\?ServerAlias //gi' )
+    ACCESSLOG=$(grep -i '\(custom\|access\)log' ${conffile} | sed -e 's/ \+/ /g' | sed -e 's/\( \+\)\?\(Custom\|Access\)Log \([^ ]\+\).*/\3/gi')
+
+    [ -z "${SERVERNAME}" ] && MAKEDEFAULT=yes
+    [ -z "${SERVERNAME}" ] && SERVERNAME=localhost
+    [ -z "${ACCESSLOG}" ] && ACCESSLOG=/var/log/apache2/access.log
+	 
+
+    cat /etc/openapp-awstats/awstats.template.conf | \
+        sed -e "s/%SERVERNAME%/${SERVERNAME}/g" | \
+        sed -e "s/%SERVERALIASES%/${SERVERALIASES}/g" | \
+        sed -e "s#%ACCESSLOG%#${ACCESSLOG}#g" > ${TMPDIR}/awstats.${SERVERNAME}.conf
+
+    [ -f ${OPENAPPAWS}/awstats.${SERVERNAME}.conf ] && \
+        echo 'Include "/etc/awstats/awstats.'${SERVERNAME}'.conf.local"' >> ${TMPDIR}/awstats.${SERVERNAME}.conf
+
+    [ "${MAKEDEFAULT}" = "yes" ] && mv ${TMPDIR}/awstats.${SERVERNAME}.conf ${TMPDIR}/awstats.conf
+
+    mv ${TMPDIR}/* /etc/awstats/
+done
+
