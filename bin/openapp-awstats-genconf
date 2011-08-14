@@ -18,7 +18,7 @@ for conffile in $(grep '<VirtualHost' ${A2CONFDIR}/* | cut -f1 -d:); do
     [ -z "${ACCESSLOG}" ] && ACCESSLOG=/var/log/apache2/access.log
 	 
 
-    cat /etc/openapp-awstats/awstats.template.conf | \
+    cat ${OPENAPPAWS}/awstats.template.conf | \
         sed -e "s/%SERVERNAME%/${SERVERNAME}/g" | \
         sed -e "s/%SERVERALIASES%/${SERVERALIASES}/g" | \
         sed -e "s#%ACCESSLOG%#${ACCESSLOG}#g" > ${TMPDIR}/awstats.${SERVERNAME}.conf
@@ -31,3 +31,4 @@ for conffile in $(grep '<VirtualHost' ${A2CONFDIR}/* | cut -f1 -d:); do
     mv ${TMPDIR}/* /etc/awstats/
 done
 
+rm -rf ${TMPDIR}
