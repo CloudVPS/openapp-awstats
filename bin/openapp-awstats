@@ -14,7 +14,7 @@ for i in /etc/awstats/awstats.*.conf; do
     fi
     CONF=`echo $i | sed -e 's,^/etc/awstats/awstats.\(.*\).conf$,\1,'`
     echo "Running awstats for $CONF"
-    /usr/lib/cgi-bin/awstats.pl -config=$CONF -update \
+    su -c "/usr/lib/cgi-bin/awstats.pl -config=$CONF -update" www-data \
         || error "Could not process $CONF"
     echo "Done ($CONF)"
     echo ""
