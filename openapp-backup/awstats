@@ -15,7 +15,8 @@ run_backup() {
 }
 
 run_restore() {
-    rsync -a ${BACKUPDIR}/ /
+    rsync -a ${BACKUPDIR}/awstats/ /var/lib/awstats
+    rsync -a ${BACKUPDIR}/openapp-awstats/ /etc/openapp-awstats
 }
 
 case ${ACTION} in
