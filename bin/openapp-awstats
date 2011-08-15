@@ -10,6 +10,7 @@ error() {
 [ -r /etc/awstats/awstats.conf ] && su -c "/usr/lib/cgi-bin/awstats.pl -config=awstats -update" www-data > /dev/null
 
 for i in /etc/awstats/awstats.*.conf; do
+    [ "$i" = "/etc/awstats/awstats.*.conf" ] && exit 0;
     CONF=`echo $i | sed -e 's,^/etc/awstats/awstats.\(.*\).conf$,\1,'`
     su -c "/usr/lib/cgi-bin/awstats.pl -config=$CONF -update" www-data > /dev/null \
         || error "Could not process $CONF"
