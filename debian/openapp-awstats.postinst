@@ -9,7 +9,7 @@ set -e
 #        * <postinst> `configure' <most-recently-configured-version>
 #        * <old-postinst> `abort-upgrade' <new version>
 #        * <conflictor's-postinst> `abort-remove' `in-favour' <package>
-#          <new-version>
+#          <new-version> 
 #        * <postinst> `abort-remove'
 #        * <deconfigured's-postinst> `abort-deconfigure' `in-favour'
 #          <failed-install-package> <version> `removing'
