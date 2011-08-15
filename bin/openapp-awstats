@@ -8,6 +8,8 @@ error() {
 echo "Creating config"
 /usr/bin/openapp-awstats-genconf
 
+[ -r /etc/awstats/awstats.conf ] && su -c "/usr/lib/cgi-bin/awstats.pl -config=awstats -update" www-data
+
 for i in /etc/awstats/awstats.*.conf; do
     if [ "A$i" = 'A/etc/awstats/awstats.*.conf' ]; then 
         error "awstats is installed, but there are no suitable configfiles"
