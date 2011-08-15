@@ -9,5 +9,5 @@ Homepage: http://www.openpanel.com/openapp/
 Package: openapp-awstats
 Architecture: any
 Pre-Depends: openapp-backup, awstats
-Depends: libgeo-ip-perl, bash, apache2, apache2-utils
+Depends: libgeo-ip-perl, bash, apache2, apache2-utils, rsync
 Description: This will install Awstats statistics for your OpenApp Appliance!

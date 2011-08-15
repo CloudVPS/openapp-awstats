@@ -7,11 +7,9 @@ OPENAPPAWS=/etc/openapp-awstats
 
 TMPDIR=$(mktemp -d)
 
-COUNTER=0
 LASTFILE=
 
-for conffile in $(grep '<VirtualHost' ${A2CONFDIR}/* | cut -f1 -d:); do
-    COUNTER=$(($COUNTER+1))
+for conffile in $(grep -H '<VirtualHost' ${A2CONFDIR}/* | cut -f1 -d:); do
     MAKEDEFAULT=no
     SERVERNAME=$(grep -i ServerName ${conffile} | sed -e 's/\(\t\| \)\+/ /g' | sed -e 's/\( \+\)\?ServerName //gi' )
     SERVERALIASES=$(grep -i ServerAlias ${conffile} | tr '\n' ' ' | sed -e 's/ \+/ /g' | sed -e 's/\( \+\)\?ServerAlias //gi' )
@@ -32,9 +30,10 @@ for conffile in $(grep '<VirtualHost' ${A2CONFDIR}/* | cut -f1 -d:); do
     LASTFILE=${TMPDIR}/awstats.${SERVERNAME}.conf
 done
 
-if [ $COUNTER -eq 1 ]; then
+if [ $(find ${TMPDIR} -type f | wc -l) -eq 1 ]; then
     mv ${LASTFILE} ${TMPDIR}/awstats.conf
 fi
 
-mv ${TMPDIR}/* /etc/awstats/
+rsync -a --delete ${TMPDIR}/ /etc/awstats/
+chmod 755 /etc/awstats
 rm -rf ${TMPDIR}
