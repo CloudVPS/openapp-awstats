@@ -27,8 +27,8 @@ case "$1" in
             echo "${OLDCONF}" > ${CRON}
             echo "" >> ${CRON}
             echo "## Original configuration disabled by openapp-awstats. New configuration follows" >> ${CRON}
-            echo "*/15 * * * www-data [ -x /usr/lib/cgi-bin/awstats.pl -a -f /etc/openapp-awstats/.htpasswd ] && /usr/bin/openapp-awstats" >> ${CRON}
-            echo "## To enable Awstats, enter a password in the OpenApp webinterface"
+            echo "*/15 * * * * www-data [ -x /usr/lib/cgi-bin/awstats.pl -a -f /etc/openapp-awstats/.htpasswd ] && /usr/bin/openapp-awstats" >> ${CRON}
+            echo "## To enable Awstats, enter a password in the OpenApp webinterface" >> ${CRON}
         fi
 
         # Enable apache2.conf
