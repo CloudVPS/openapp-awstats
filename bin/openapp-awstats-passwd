@@ -10,6 +10,10 @@ fatal() {
 [ -z $1 ] && PASSWORD=`pwgen -s 10`
 [ "$1" = "stdin" ] && read -p "Please enter your password: " PASSWORD
 
-htpasswd -bc /etc/openapp-awstats/.htpasswd admin ${PASSWORD} > /dev/null
+if [ -x /usr/sbin/apache2 ]; then
+    htpasswd -bc /etc/openapp-awstats/.htpasswd admin ${PASSWORD} > /dev/null
+elif [ -x /usr/sbin/lighttpd ]; then
+    echo "admin:${PASSWORD}" > /etc/openapp-awstats/httpd.passwd
+fi
 
 echo "${PASSWORD} is your new password"

@@ -1,0 +1,28 @@
+#!/bin/bash
+
+##
+# Please note, only one virtualhost is supported
+LIGHTTPDCONFDIR=/etc/lighttpd
+OPENAPPAWS=/etc/openapp-awstats
+
+TMPDIR=$(mktemp -d)
+
+ACCESSLOG=$(grep accesslog.filename ${LIGHTTPDCONFDIR}/lighttpd.conf | cut -f2 -d '=' | sed -e 's/[ \+="]\+//g')
+SERVERNAME=$(hostname -f)
+SERVERALIASES=${SERVERNAME}
+
+[ -z ${ACCESSLOG} -o -z ${SERVERNAME} ] && exit 127
+
+cat ${OPENAPPAWS}/awstats.template.conf | \
+    sed -e "s/%SERVERNAME%/${SERVERNAME}/g" | \
+    sed -e "s/%SERVERALIASES%/${SERVERALIASES}/g" | \
+    sed -e "s#%ACCESSLOG%#${ACCESSLOG}#g" > ${TMPDIR}/awstats.${SERVERNAME}.conf
+
+[ -f ${OPENAPPAWS}/awstats.${SERVERNAME}.conf ] && \
+    echo 'Include "/etc/awstats/awstats.'${SERVERNAME}'.conf.local"' >> ${TMPDIR}/awstats.${SERVERNAME}.conf
+
+mv ${TMPDIR}/awstats.${SERVERNAME}.conf ${TMPDIR}/awstats.conf
+
+rsync -a --delete ${TMPDIR}/ /etc/awstats/
+chmod 755 /etc/awstats
+rm -rf ${TMPDIR}

@@ -1,39 +1,11 @@
 #!/bin/bash
 
-##
-# Please note, only one virtualhost per configfile is supported
-A2CONFDIR=/etc/apache2/sites-enabled
-OPENAPPAWS=/etc/openapp-awstats
-
-TMPDIR=$(mktemp -d)
-
-LASTFILE=
-
-for conffile in $(grep -H '<VirtualHost' ${A2CONFDIR}/* | cut -f1 -d:); do
-    MAKEDEFAULT=no
-    SERVERNAME=$(grep -i ServerName ${conffile} | sed -e 's/\(\t\| \)\+/ /g' | sed -e 's/\( \+\)\?ServerName //gi' )
-    SERVERALIASES=$(grep -i ServerAlias ${conffile} | tr '\n' ' ' | sed -e 's/ \+/ /g' | sed -e 's/\( \+\)\?ServerAlias //gi' )
-    ACCESSLOG=$(grep -i '\(custom\|access\)log' ${conffile} | sed -e 's/ \+/ /g' | sed -e 's/\( \+\)\?\(Custom\|Access\)Log \([^ ]\+\).*/\3/gi')
-
-    [ -z "${SERVERNAME}" ] && SERVERNAME=$(hostname -f)
-    [ -z "${ACCESSLOG}" ] && ACCESSLOG=/var/log/apache2/access.log
-	 
-
-    cat ${OPENAPPAWS}/awstats.template.conf | \
-        sed -e "s/%SERVERNAME%/${SERVERNAME}/g" | \
-        sed -e "s/%SERVERALIASES%/${SERVERALIASES}/g" | \
-        sed -e "s#%ACCESSLOG%#${ACCESSLOG}#g" > ${TMPDIR}/awstats.${SERVERNAME}.conf
-
-    [ -f ${OPENAPPAWS}/awstats.${SERVERNAME}.conf ] && \
-        echo 'Include "/etc/awstats/awstats.'${SERVERNAME}'.conf.local"' >> ${TMPDIR}/awstats.${SERVERNAME}.conf
-
-    LASTFILE=${TMPDIR}/awstats.${SERVERNAME}.conf
-done
-
-if [ $(find ${TMPDIR} -type f | wc -l) -eq 1 ]; then
-    mv ${LASTFILE} ${TMPDIR}/awstats.conf
+if [ -x /usr/sbin/lighttpd ]; then
+    openapp-awstats-lighttpd-genconf
+elif [ -x /usr/sbin/apache2 ]; then
+    openapp-awstats-apache2-genconf
+else
+    echo "No webserver installed.."
 fi
 
-rsync -a --delete ${TMPDIR}/ /etc/awstats/
-chmod 755 /etc/awstats
-rm -rf ${TMPDIR}
+
