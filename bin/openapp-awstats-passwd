@@ -14,6 +14,8 @@ if [ -x /usr/sbin/apache2 ]; then
     htpasswd -bc /etc/openapp-awstats/.htpasswd admin ${PASSWORD} > /dev/null
 elif [ -x /usr/sbin/lighttpd ]; then
     echo "admin:${PASSWORD}" > /etc/openapp-awstats/httpd.passwd
+    # Always touch /etc/openapp-awstats/.htpasswd so the cronscript will run
+    touch /etc/openapp-awstats/.htpasswd
 fi
 
 echo "${PASSWORD} is your new password"
