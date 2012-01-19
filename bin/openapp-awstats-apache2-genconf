@@ -24,7 +24,7 @@ for conffile in $(grep -H '<VirtualHost' ${A2CONFDIR}/* | cut -f1 -d:); do
         sed -e "s/%SERVERALIASES%/${SERVERALIASES}/g" | \
         sed -e "s#%ACCESSLOG%#${ACCESSLOG}#g" > ${TMPDIR}/awstats.${SERVERNAME}.conf
 
-    [ -f ${OPENAPPAWS}/awstats.${SERVERNAME}.conf ] && \
+    [ -f ${OPENAPPAWS}/awstats.${SERVERNAME}.conf.local ] && \
         echo 'Include "/etc/awstats/awstats.'${SERVERNAME}'.conf.local"' >> ${TMPDIR}/awstats.${SERVERNAME}.conf
 
     LASTFILE=${TMPDIR}/awstats.${SERVERNAME}.conf
@@ -34,6 +34,6 @@ if [ $(find ${TMPDIR} -type f | wc -l) -eq 1 ]; then
     mv ${LASTFILE} ${TMPDIR}/awstats.conf
 fi
 
-rsync -a --delete ${TMPDIR}/ /etc/awstats/
+rsync -a --exclude *.conf.local --delete ${TMPDIR}/ /etc/awstats/
 chmod 755 /etc/awstats
 rm -rf ${TMPDIR}

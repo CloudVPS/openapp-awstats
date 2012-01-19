@@ -18,11 +18,11 @@ cat ${OPENAPPAWS}/awstats.template.conf | \
     sed -e "s/%SERVERALIASES%/${SERVERALIASES}/g" | \
     sed -e "s#%ACCESSLOG%#${ACCESSLOG}#g" > ${TMPDIR}/awstats.${SERVERNAME}.conf
 
-[ -f ${OPENAPPAWS}/awstats.${SERVERNAME}.conf ] && \
+[ -f ${OPENAPPAWS}/awstats.${SERVERNAME}.conf.local ] && \
     echo 'Include "/etc/awstats/awstats.'${SERVERNAME}'.conf.local"' >> ${TMPDIR}/awstats.${SERVERNAME}.conf
 
 mv ${TMPDIR}/awstats.${SERVERNAME}.conf ${TMPDIR}/awstats.conf
 
-rsync -a --delete ${TMPDIR}/ /etc/awstats/
+rsync -a --exclude *.conf.local --delete ${TMPDIR}/ /etc/awstats/
 chmod 755 /etc/awstats
 rm -rf ${TMPDIR}
